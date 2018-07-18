@@ -998,6 +998,7 @@
       })
 
       this.isMounted = true
+      this.refresh();
     },
     beforeDestroy () {
       this.isComponentExists = false
