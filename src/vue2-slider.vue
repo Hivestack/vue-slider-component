@@ -7,6 +7,57 @@
     @click="wrapClick"
   >
     <div ref="elem" aria-hidden="true" class="vue-slider" :style="[elemStyles, bgStyle]">
+      <div
+              ref="process"
+              :class="['vue-slider-process', { 'vue-slider-process-dragable': isRange && processDragable }]"
+              :style="processStyle"
+              @click="processClick"
+              @mousedown="moveStart($event, 0, true)"
+              @touchstart="moveStart($event, 0, true)"
+      >
+        <div ref="mergedTooltip" class="vue-merged-tooltip" :class="['vue-slider-tooltip-' + tooltipDirection[0], 'vue-slider-tooltip-wrap']" :style="tooltipMergedPosition">
+          <slot name="tooltip">
+            <span class="vue-slider-tooltip" :style="tooltipStyles">
+              {{ mergeFormatter ? mergeFormatting(val[0], val[1]) : (formatter ? `${formatting(val[0])} - ${formatting(val[1])}` : `${val[0]} - ${val[1]}`) }}
+            </span>
+          </slot>
+        </div>
+      </div>
+      <ul class="vue-slider-piecewise">
+        <li v-for="(piecewiseObj, index) in piecewiseDotWrap" class="vue-slider-piecewise-item" :style="[piecewiseDotStyle, piecewiseObj.style]" :key="index">
+          <slot
+                  name="piecewise"
+                  :label="piecewiseObj.label"
+                  :index="index"
+                  :first="index === 0"
+                  :last="index === piecewiseDotWrap.length - 1"
+                  :active="piecewiseObj.inRange"
+          >
+            <span
+                    v-if="piecewise"
+                    class="vue-slider-piecewise-dot"
+                    :style="[ piecewiseStyle, piecewiseObj.inRange ? piecewiseActiveStyle : null ]"
+            ></span>
+          </slot>
+
+          <slot
+                  name="label"
+                  :label="piecewiseObj.label"
+                  :index="index"
+                  :first="index === 0"
+                  :last="index === piecewiseDotWrap.length - 1"
+                  :active="piecewiseObj.inRange"
+          >
+            <span
+                    v-if="piecewiseLabel"
+                    class="vue-slider-piecewise-label"
+                    :style="[ labelStyle, piecewiseObj.inRange ? labelActiveStyle : null ]"
+            >
+              {{ piecewiseObj.label }}
+            </span>
+          </slot>
+        </li>
+      </ul>
       <template v-if="isRange">
         <div
           ref="dot0"
@@ -86,57 +137,6 @@
           </div>
         </div>
       </template>
-      <ul class="vue-slider-piecewise">
-        <li v-for="(piecewiseObj, index) in piecewiseDotWrap" class="vue-slider-piecewise-item" :style="[piecewiseDotStyle, piecewiseObj.style]" :key="index">
-          <slot
-            name="piecewise"
-            :label="piecewiseObj.label"
-            :index="index"
-            :first="index === 0"
-            :last="index === piecewiseDotWrap.length - 1"
-            :active="piecewiseObj.inRange"
-          >
-            <span
-              v-if="piecewise"
-              class="vue-slider-piecewise-dot"
-              :style="[ piecewiseStyle, piecewiseObj.inRange ? piecewiseActiveStyle : null ]"
-            ></span>
-          </slot>
-
-          <slot
-            name="label"
-            :label="piecewiseObj.label"
-            :index="index"
-            :first="index === 0"
-            :last="index === piecewiseDotWrap.length - 1"
-            :active="piecewiseObj.inRange"
-          >
-            <span
-              v-if="piecewiseLabel"
-              class="vue-slider-piecewise-label"
-              :style="[ labelStyle, piecewiseObj.inRange ? labelActiveStyle : null ]"
-            >
-              {{ piecewiseObj.label }}
-            </span>
-          </slot>
-        </li>
-      </ul>
-      <div 
-        ref="process"
-        :class="['vue-slider-process', { 'vue-slider-process-dragable': isRange && processDragable }]" 
-        :style="processStyle"
-        @click="processClick"
-        @mousedown="moveStart($event, 0, true)"
-        @touchstart="moveStart($event, 0, true)"
-      >
-      <div ref="mergedTooltip" class="vue-merged-tooltip" :class="['vue-slider-tooltip-' + tooltipDirection[0], 'vue-slider-tooltip-wrap']" :style="tooltipMergedPosition">
-          <slot name="tooltip">
-            <span class="vue-slider-tooltip" :style="tooltipStyles">
-              {{ mergeFormatter ? mergeFormatting(val[0], val[1]) : (formatter ? `${formatting(val[0])} - ${formatting(val[1])}` : `${val[0]} - ${val[1]}`) }}
-            </span>
-          </slot>
-      </div>
-    </div>
     <input v-if="!isRange && !data" class="vue-slider-sr-only" type="range" v-model="val" :min="min" :max="max" />
     </div>
   </div>
@@ -1038,18 +1038,15 @@
     top: 0;
     width: 100%;
     height: 100%;
-    z-index: 2;
   }
   .vue-slider-component .vue-slider-process {
     position: absolute;
     border-radius: 15px;
     background-color: #3498db;
     transition: all 0s;
-    z-index: 1;
   }
   .vue-slider-component .vue-slider-process.vue-slider-process-dragable {
     cursor: pointer;
-    z-index: 3;
   }
   .vue-slider-component.vue-slider-horizontal .vue-slider-process {
     width: 0;
@@ -1085,13 +1082,11 @@
     transition: all 0s;
     will-change: transform;
     cursor: pointer;
-    z-index: 4;
   }
   .vue-slider-component .vue-slider-dot.vue-slider-dot-focus {
     box-shadow: 0 0 2px 1px #3498db;
   }
   .vue-slider-component .vue-slider-dot.vue-slider-dot-dragging {
-    z-index: 5;
   }
   .vue-slider-component.vue-slider-horizontal .vue-slider-dot {
     left: 0;
@@ -1108,7 +1103,6 @@
   .vue-slider-component .vue-slider-tooltip-wrap {
     display: none;
     position: absolute;
-    z-index: 9;
   }
   .vue-slider-component .vue-slider-tooltip {
     display: block;
@@ -1229,7 +1223,6 @@
     background-color: rgba(0, 0, 0, 0.16);
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    z-index: 2;
     transition: all .3s;
   }
   .vue-slider-component .vue-slider-piecewise-item:first-child .vue-slider-piecewise-dot, .vue-slider-component .vue-slider-piecewise-item:last-child .vue-slider-piecewise-dot {
