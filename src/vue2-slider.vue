@@ -1033,12 +1033,12 @@
     background-color: #ccc;
   }
   .vue-slider-component .vue-slider::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    /*content: '';*/
+    /*position: absolute;*/
+    /*left: 0;*/
+    /*top: 0;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
   }
   .vue-slider-component .vue-slider-process {
     position: absolute;
