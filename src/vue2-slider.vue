@@ -999,7 +999,7 @@
 
       this.isMounted = true
 
-      setTimeout(() => this.refresh, 100);
+      setTimeout(this.refresh, 1000);
     },
     beforeDestroy() {
       this.isComponentExists = false
